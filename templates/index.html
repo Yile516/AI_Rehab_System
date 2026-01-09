@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card fade-in" style="max-width: 1000px;">
+    <!-- Hero / Action Section -->
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <h1><i class="fas fa-user-md"></i> 臨床級居家復健評估</h1>
+        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem auto;">
+            運用 AI 視覺技術，深入分析高齡者"起立-坐下" (STS) 的生物力學機制。
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <!-- Primary Action: Live Record -->
+            <a href="/record" class="btn" style="padding: 1.5rem 3rem; font-size: 1.3rem;">
+                <i class="fas fa-camera"></i> 開始即時評估
+            </a>
+
+            <!-- Secondary Action: Upload (Hidden input trigger could be better, but form is simple) -->
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <p style="font-size: 0.9rem; opacity: 0.7;">或是上傳現有影片檔案</p>
+            <form action="/" method="post" enctype="multipart/form-data" style="max-width: 400px; margin: 0 auto;">
+                <label class="btn btn-secondary" style="width: 100%; display: block;">
+                    <i class="fas fa-upload"></i> 選擇檔案上傳
+                    <input type="file" name="video" accept="video/*" onchange="this.form.submit()"
+                        style="display: none;">
+                </label>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scientific Context Section -->
+    <div class="science-section">
+        <h2><i class="fas fa-microscope"></i> 動作科學解析</h2>
+
+        <p style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">
+            "起立-坐下" (STS) 不僅是一個日常動作，更是評估高齡者下肢肌力、平衡能力與跌倒風險的黃金指標。
+            本系統自動對應 STS 動作的四個關鍵動力學階段：
+        </p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-number">1</div>
+                <h4>屈曲期 (Flexion)</h4>
+                <p>軀幹前傾產生動量。此階段若受限，可能顯示核心控制不足。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-number">2</div>
+                <h4>動量轉移 (Momentum)</h4>
+                <p>臀部離椅，重心向前轉移。跌倒風險最高的關鍵時刻。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-number">3</div>
+                <h4>伸展期 (Extension)</h4>
+                <p>膝髖關節伸直。直接反映下肢最大爆發力 (Power)。</p>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-number">4</div>
+                <h4>穩定期 (Stabilization)</h4>
+                <p>完全站立後的平衡維持。偵測異常晃動 (Postural Sway)。</p>
+            </div>
+        </div>
+
+        <div class="clinical-grid">
+            <div class="clinical-card">
+                <h3><i class="fas fa-user-injured"></i> 跌倒風險關聯</h3>
+                <p>研究顯示，STS 動作模式的改變（如代償性手扶膝蓋、起身速度變慢）與未來 6 個月內的跌倒機率高度相關。</p>
+            </div>
+            <div class="clinical-card" style="border-left-color: var(--accent-success);">
+                <h3><i class="fas fa-walking"></i> 功能性獨立指標</h3>
+                <p>能夠獨立、流暢地完成 STS 動作，是高齡者維持日常生活獨立性 (ADL) 的基礎能力。</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

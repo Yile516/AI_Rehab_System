@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.conda/
+venv/
+.venv/
+
+# Runtime data
+uploads/
+results/
+
+# Large media files (often better to exclude test videos)
+*.mp4

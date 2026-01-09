@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI 居家復健評估{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/care_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <i class="fas fa-heartbeat"></i> AI 居家復健
+        </a>
+        <div class="nav-links">
+            <!-- Future links can go here -->
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 AI Rehab System. Professional Care at Home.</p>
+    </footer>
+</body>
+</html>

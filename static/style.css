@@ -1,0 +1,7 @@
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+.container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 800px; width: 100%; text-align: center; }
+h1 { color: #2c3e50; }
+.btn { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; font-size: 16px; }
+.result-box { background: #f8f9fa; padding: 20px; text-align: left; margin: 20px 0; border-radius: 5px; }
+.metrics { text-align: left; margin-top: 20px; background: #ecf0f1; padding: 20px; border-radius: 10px; }
+input[type="file"] { margin: 20px; padding: 10px; border: 2px dashed #bdc3c7; width: 80%; }

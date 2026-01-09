@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="recorder-container fade-in">
+    <!-- Header -->
+    <div class="recorder-header">
+        <h2><i class="fas fa-camera"></i> 動作錄製指引</h2>
+        <p>請將您的身體對準下方的白色虛線框，確保畫面包含全身與椅子。</p>
+    </div>
+
+    <!-- Main Viewport -->
+    <div class="camera-viewport">
+        <!-- Live Video Feed -->
+        <video id="webcam" autoplay playsinline muted></video>
+
+        <!-- Ghost Overlay (Guide) -->
+        <div class="overlay-guide">
+            <img src="{{ url_for('static', filename='images/ghost_guide_overlay.png') }}" class="ghost-img" alt="Guide">
+        </div>
+
+        <!-- Recording Indicator -->
+        <div id="recording-status" class="status-indicator hidden">
+            <div class="red-dot pulse"></div>
+            <span>錄製中... <span id="timer">00:00</span></span>
+        </div>
+
+        <!-- Countdown Overlay -->
+        <div id="countdown-overlay" class="countdown-display hidden">3</div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-area">
+        <button id="btn-start" class="btn btn-record">
+            <i class="fas fa-circle"></i> 開始錄製
+        </button>
+        <button id="btn-stop" class="btn btn-stop hidden">
+            <i class="fas fa-square"></i> 停止並分析
+        </button>
+    </div>
+
+    <!-- Hidden Form for Submission -->
+    <form id="upload-form" action="/analyze_blob" method="POST" enctype="multipart/form-data" style="display: none;">
+        <input type="file" name="video" id="video-input">
+    </form>
+</div>
+
+<!-- JavaScript for MediaRecorder -->
+<script>
+    let mediaRecorder;
+    let recordedChunks = [];
+    let timerInterval;
+    let startTime;
+
+    const webcam = document.getElementById('webcam');
+    const btnStart = document.getElementById('btn-start');
+    const btnStop = document.getElementById('btn-stop');
+    const statusIndicator = document.getElementById('recording-status');
+    const timerDisplay = document.getElementById('timer');
+    const countdownOverlay = document.getElementById('countdown-overlay');
+
+    // 1. Init Webcam
+    async function initCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: 'user',
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            });
+            webcam.srcObject = stream;
+        } catch (err) {
+            alert("無法存取相機，請確認權限。\nError: " + err);
+        }
+    }
+
+    initCamera();
+
+    // 2. Start Recording Logic
+    btnStart.addEventListener('click', () => {
+        startCountdown();
+    });
+
+    function startCountdown() {
+        let count = 3;
+        countdownOverlay.textContent = count;
+        countdownOverlay.classList.remove('hidden');
+        btnStart.disabled = true;
+
+        const interval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countdownOverlay.textContent = count;
+            } else {
+                clearInterval(interval);
+                countdownOverlay.classList.add('hidden');
+                startRecording();
+            }
+        }, 1000);
+    }
+
+    function startRecording() {
+        recordedChunks = [];
+        const stream = webcam.srcObject;
+        // Try to check supported mime types
+        let options = { mimeType: 'video/webm; codecs=vp9' };
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            options = { mimeType: 'video/webm; codecs=vp8' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                options = { mimeType: 'video/webm' };
+            }
+        }
+
+        try {
+            mediaRecorder = new MediaRecorder(stream, options);
+        } catch (e) {
+            alert('MediaRecorder initialization failed: ' + e);
+            return;
+        }
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = uploadVideo;
+
+        mediaRecorder.start();
+
+        // UI Updates
+        btnStart.classList.add('hidden');
+        btnStop.classList.remove('hidden');
+        statusIndicator.classList.remove('hidden');
+
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    // 3. Stop Logic
+    btnStop.addEventListener('click', () => {
+        mediaRecorder.stop();
+        clearInterval(timerInterval);
+        btnStop.disabled = true;
+        btnStop.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 分析中...';
+    });
+
+    function updateTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const min = String(Math.floor(elapsed / 60)).padStart(2, '0');
+        const sec = String(elapsed % 60).padStart(2, '0');
+        timerDisplay.textContent = `${min}:${sec}`;
+    }
+
+    // 4. Upload Logic
+    function uploadVideo() {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+
+        // Create FormData
+        const formData = new FormData();
+        // Generate a unique filename
+        const filename = `webcam_record_${Date.now()}.webm`;
+        formData.append('video', blob, filename);
+
+        // Send to backend
+        fetch('/analyze_blob', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.text(); // Expecting HTML response
+                }
+                throw new Error('Analysis failed');
+            })
+            .then(html => {
+                // Replace document content with result
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(err => {
+                alert('上傳分析失敗: ' + err.message);
+                btnStop.disabled = false;
+                btnStop.innerHTML = '<i class="fas fa-square"></i> 停止並分析';
+            });
+    }
+</script>
+
+<style>
+    /* Local styles for recorder, mainly for layout. Theming should handle colors. */
+    .recorder-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .camera-viewport {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        aspect-ratio: 16/9;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 2rem 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--border-color);
+    }
+
+    video#webcam {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scaleX(-1);
+        /* Mirror effect for user convenience */
+    }
+
+    .overlay-guide {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 80%;
+        pointer-events: none;
+        opacity: 0.5;
+        /* Semi-transparent */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .ghost-img {
+        height: 100%;
+        width: auto;
+        object-fit: contain;
+    }
+
+    .countdown-display {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 8rem;
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+    }
+
+    .status-indicator {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 8px 16px;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        backdrop-filter: blur(4px);
+    }
+
+    .red-dot {
+        width: 12px;
+        height: 12px;
+        background-color: #ff3b30;
+        border-radius: 50%;
+    }
+
+    .pulse {
+        animation: pulse-animation 1.5s infinite;
+    }
+
+    @keyframes pulse-animation {
+        0% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.5;
+            transform: scale(1.2);
+        }
+
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .controls-area {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 2rem;
+    }
+
+    .btn-record {
+        background-color: var(--accent-success);
+        /* Use theme var */
+        color: white;
+        font-size: 1.2rem;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-stop {
+        background-color: var(--accent-error);
+        /* Use theme var */
+        color: white;
+        font-size: 1.2rem;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+{% endblock %}

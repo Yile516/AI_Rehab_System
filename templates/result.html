@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard fade-in" style="width: 100%; max-width: 1200px;">
+    <!-- Left: Video Analysis -->
+    <div class="video-wrapper">
+        <video controls autoplay loop playsinline muted>
+            <source src="{{ url_for('get_result_video', filename=video) }}" type="video/mp4">
+            您的瀏覽器不支援影片播放。
+        </video>
+    </div>
+
+    <!-- Right: Health Report -->
+    <div class="report-card">
+        <h2>
+            <i class="fas fa-file-medical-alt"></i> 診斷報告
+        </h2>
+
+        <div style="margin-bottom: 2rem;">
+            <span class="status-badge"
+                style="background-color: {{ info.color }}20; color: {{ info.color }}; border: 1px solid {{ info.color }};">
+                {{ info.status }}
+            </span>
+            <p style="color: var(--text-primary); font-weight: 500;">
+                {{ info.desc }}
+            </p>
+        </div>
+
+        <h3>生物力學數據</h3>
+        <div class="metrics-list">
+            <div class="data-row">
+                <span class="data-label"><i class="fas fa-ruler-vertical"></i> 最大軀幹前傾</span>
+                <span class="data-value" style="color: {{ 'red' if features.X1_MaxTrunkLean > 45 else 'green' }}">
+                    {{ "%.1f"|format(features.X1_MaxTrunkLean) }}°
+                </span>
+            </div>
+            <div class="data-row">
+                <span class="data-label"><i class="fas fa-arrows-alt-h"></i> 手膝最小距離</span>
+                <span class="data-value" style="color: {{ 'red' if features.X3_MinHandKneeDist < 0.2 else 'green' }}">
+                    {{ "%.2f"|format(features.X3_MinHandKneeDist) }}
+                </span>
+            </div>
+            <div class="data-row">
+                <span class="data-label"><i class="fas fa-stopwatch"></i> 動作總時長</span>
+                <span class="data-value">{{ "%.2f"|format(features.X2_TotalDuration) }} s</span>
+            </div>
+            <div class="data-row">
+                <span class="data-label"><i class="fas fa-angle-right"></i> 結束膝蓋角度</span>
+                <span class="data-value">{{ "%.1f"|format(features.X4_EndKneeAngle) }}°</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="/" class="btn">
+                <i class="fas fa-redo"></i> 再次檢測
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
