@@ -51,34 +51,50 @@ def process_video(video_path, output_csv):
         ret, frame = cap.read()
         if not ret: break
         
+        # Auto-rotate if landscape but likely portrait content
+        # Simple heuristic: If width > height, rotate 90 degrees clockwise (or counter-clockwise depending on metadata, but assuming standard phone issues)
+        # For robustness, we can try to rely on MediaPipe, but simpler is better:
+        # If width > height -> Rotate to make it height > width (Portrait)
+        h, w = frame.shape[:2]
+        if w > h:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
         results = pose.process(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         row = {'frame': frame_count, 'time': frame_count/fps}
         
         if results.pose_landmarks:
             landmarks = results.pose_landmarks.landmark
             
-            # 1. Side Detection (Determine once)
+            # 1. Side Detection (Robust with buffer)
             if determined_side is None:
-                # Check visibility of left vs right shoulders/hips
                 left_vis = landmarks[11].visibility + landmarks[23].visibility
                 right_vis = landmarks[12].visibility + landmarks[24].visibility
-                side_buffer.append('left' if left_vis > right_vis else 'right')
                 
-                if len(side_buffer) > 10:
+                # Check absolute visibility to avoid noise
+                if max(left_vis, right_vis) > 1.0: # At least one side decent
+                    side_buffer.append('left' if left_vis > right_vis else 'right')
+                
+                # Wait for buffer to fill or default if taking too long
+                if len(side_buffer) >= 30: # Use Config value via import if possible, hardcoded 30 for now to match plan
                     determined_side = max(set(side_buffer), key=side_buffer.count)
                     print(f"Analyzed Side: {determined_side}")
+                elif frame_count > 60: # Timeout case
+                     print("Side detection timed out, defaulting to right")
+                     determined_side = 'right'
 
             # Define KP Map based on side
-            if determined_side == 'left':
+            # Only process if side is determined or we fallback
+            current_side = determined_side if determined_side else 'right'
+            
+            if current_side == 'left':
                 kp_map = {'SHOULDER': 11, 'HIP': 23, 'KNEE': 25, 'ANKLE': 27, 'WRIST': 15}
-            else: # Default to right if undetect or right
+            else: # Default to right
                 kp_map = {'SHOULDER': 12, 'HIP': 24, 'KNEE': 26, 'ANKLE': 28, 'WRIST': 16}
 
             # 2. Extract Data
             valid_frame = True
             for name, idx in kp_map.items():
                 lm = landmarks[idx]
-                # Filter low visibility
                 if lm.visibility < 0.3:
                     valid_frame = False
                     break
@@ -92,23 +108,26 @@ def process_video(video_path, output_csv):
                 wrist = [row['WRIST_x'], row['WRIST_y'], row['WRIST_z']]
 
                 # 3. Calculate Features
-                row['trunk_angle'] = calculate_vertical_angle(shoulder, hip)
-                row['knee_angle'] = calculate_angle_3points(hip, knee, ankle)
-                
-                # Hand-Knee Dist (2D Only)
-                w_pt, k_pt = np.array(wrist[:2]), np.array(knee[:2])
-                row['hand_knee_dist'] = np.linalg.norm(w_pt - k_pt)
+                try:
+                    row['trunk_angle'] = calculate_vertical_angle(shoulder, hip)
+                    row['knee_angle'] = calculate_angle_3points(hip, knee, ankle)
+                    
+                    # Hand-Knee Dist
+                    w_pt, k_pt = np.array(wrist[:2]), np.array(knee[:2])
+                    row['hand_knee_dist'] = np.linalg.norm(w_pt - k_pt)
+                except Exception as e:
+                    print(f"Calculation error at frame {frame_count}: {e}")
+                    valid_frame = False
 
-                # Store active side for visualizer
-                row['active_side'] = determined_side
+                row['active_side'] = current_side
 
-                data.append(row)
-
+        data.append(row)
         frame_count += 1
         
     cap.release()
     df = pd.DataFrame(data)
     
+    # Needs at least some valid data to be useful, but for sync we return what we have
     if df.empty: return None, None
     
     df.to_csv(output_csv, index=False)

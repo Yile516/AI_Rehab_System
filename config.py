@@ -14,6 +14,10 @@ class Config:
     RESULTS_FOLDER = os.path.join(BASE_DIR, 'results')
     MODEL_PATH = os.path.join(BASE_DIR, 'model', 'rehab_model.pkl')
     ALLOWED_EXTENSIONS = {'mp4', 'mov', 'avi'}
+    
+    # Side Detection Constants
+    SIDE_DETECTION_BUFFER_FRAMES = 30
+    MIN_VISIBILITY_THRESHOLD = 0.5
 
     # 確保資料夾存在
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)

@@ -130,8 +130,7 @@ p {
 /* Cards */
 .card,
 .report-card,
-.video-wrapper,
-.clinical-card {
+.video-wrapper {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 16px;
@@ -140,6 +139,17 @@ p {
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-wrapper video {
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
 /* Buttons */
@@ -243,10 +253,7 @@ p {
     }
 }
 
-.video-wrapper video {
-    width: 100%;
-    border-radius: 8px;
-}
+
 
 .status-badge {
     display: inline-block;
@@ -293,4 +300,218 @@ p {
     border-top: 1px solid var(--border-color);
     width: 100%;
     color: var(--text-muted);
+}
+
+.container-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Vertical Text Layout for Report */
+.vertical-report {
+    display: flex;
+    flex-direction: row-reverse;
+    /* Right to left flow for vertical columns */
+    height: 600px;
+    /* Fixed height container */
+    overflow-x: auto;
+    align-items: flex-start;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.1em;
+}
+
+/* === Split Layout Redesign (Left-Right) === */
+.split-layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 90vh;
+    /* Full viewport height */
+    padding: 2rem;
+    gap: 2rem;
+    overflow: hidden;
+    /* Prevent body scroll */
+}
+
+/* LEFT: Video Section */
+.video-section-left {
+    flex: 1.5;
+    /* Takes 60% width */
+    background: #000;
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+}
+
+.video-section-left video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* RIGHT: Info Panel */
+.info-panel-right {
+    flex: 1;
+    /* Takes 40% width */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 380px;
+}
+
+/* RIGHT TOP: Diagnosis (Risk) */
+.diagnosis-top {
+    flex: 0 0 auto;
+    /* Natural height */
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    /* Stack items vertically */
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 180px;
+    position: relative;
+    gap: 1rem;
+}
+
+.diagnosis-desc {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.status-stamp {
+    font-size: 2rem;
+    /* Larger font for horizontal */
+    font-weight: 800;
+    padding: 0.5rem 1rem;
+    border: 3px solid currentColor;
+    border-radius: 8px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 15px currentColor;
+    opacity: 0.9;
+    display: inline-block;
+}
+
+/* RIGHT BOTTOM: Metrics List */
+.metrics-bottom {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    /* Scrollable list */
+    padding-right: 0.5rem;
+    /* Space for scrollbar */
+}
+
+.metric-card-row {
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s, background 0.2s;
+    border-left: 4px solid transparent;
+    /* Accent placeholder */
+}
+
+.metric-card-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+}
+
+.metric-icon {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    width: 40px;
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.metric-value {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Custom Scrollbar for metrics */
+.metrics-bottom::-webkit-scrollbar {
+    width: 6px;
+}
+
+.metrics-bottom::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.metrics-bottom::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+/* Info Scroll (The vertical scroll look) */
+.info-scroll {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    height: 70vh;
+    display: flex;
+    flex-wrap: nowrap;
+    /* Ensure single long column */
+    gap: 2rem;
+    align-items: center;
+    /* Center relative to writing mode line */
+    color: var(--text-primary);
+}
+
+.scroll-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    border-bottom: 4px solid var(--accent-primary);
+    /* Becomes side border in vertical */
+    padding-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+.scroll-data-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    /* Becomes bottom border in vertical */
+}
+
+.stamp-badge {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    padding: 1.5rem 0.8rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: 3px solid currentColor;
+    border-radius: 12px;
+    letter-spacing: 0.2rem;
+    box-shadow: 0 0 15px currentColor;
+    margin: 1rem;
 }

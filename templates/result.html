@@ -1,60 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard fade-in" style="width: 100%; max-width: 1200px;">
-    <!-- Left: Video Analysis -->
-    <div class="video-wrapper">
+<div class="split-layout fade-in">
+
+    <!-- LEFT: Video Section -->
+    <div class="video-section-left">
         <video controls autoplay loop playsinline muted>
             <source src="{{ url_for('get_result_video', filename=video) }}" type="video/mp4">
             您的瀏覽器不支援影片播放。
         </video>
+        <!-- Overlay Re-test Button -->
+        <a href="/" class="btn"
+            style="position: absolute; bottom: 20px; right: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+            <i class="fas fa-redo"></i> 再次檢測
+        </a>
     </div>
 
-    <!-- Right: Health Report -->
-    <div class="report-card">
-        <h2>
-            <i class="fas fa-file-medical-alt"></i> 診斷報告
-        </h2>
+    <!-- RIGHT: Info Panel -->
+    <div class="info-panel-right">
 
-        <div style="margin-bottom: 2rem;">
-            <span class="status-badge"
-                style="background-color: {{ info.color }}20; color: {{ info.color }}; border: 1px solid {{ info.color }};">
-                {{ info.status }}
-            </span>
-            <p style="color: var(--text-primary); font-weight: 500;">
+        <!-- TOP: Diagnosis Cards (Risk Identification) -->
+        <div class="diagnosis-top" style="border-left: 6px solid {{ info.color }};">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                <div class="status-stamp" style="color: {{ info.color }};">
+                    {{ info.status }}
+                </div>
+                <!-- AI Tag aligned to right -->
+                <div style="color: var(--text-muted); font-size: 0.9rem;">
+                    <i class="fas fa-file-medical-alt"></i> AI 智能診斷
+                </div>
+            </div>
+
+            <div class="diagnosis-desc">
                 {{ info.desc }}
-            </p>
-        </div>
-
-        <h3>生物力學數據</h3>
-        <div class="metrics-list">
-            <div class="data-row">
-                <span class="data-label"><i class="fas fa-ruler-vertical"></i> 最大軀幹前傾</span>
-                <span class="data-value" style="color: {{ 'red' if features.X1_MaxTrunkLean > 45 else 'green' }}">
-                    {{ "%.1f"|format(features.X1_MaxTrunkLean) }}°
-                </span>
-            </div>
-            <div class="data-row">
-                <span class="data-label"><i class="fas fa-arrows-alt-h"></i> 手膝最小距離</span>
-                <span class="data-value" style="color: {{ 'red' if features.X3_MinHandKneeDist < 0.2 else 'green' }}">
-                    {{ "%.2f"|format(features.X3_MinHandKneeDist) }}
-                </span>
-            </div>
-            <div class="data-row">
-                <span class="data-label"><i class="fas fa-stopwatch"></i> 動作總時長</span>
-                <span class="data-value">{{ "%.2f"|format(features.X2_TotalDuration) }} s</span>
-            </div>
-            <div class="data-row">
-                <span class="data-label"><i class="fas fa-angle-right"></i> 結束膝蓋角度</span>
-                <span class="data-value">{{ "%.1f"|format(features.X4_EndKneeAngle) }}°</span>
             </div>
         </div>
 
-        <div style="margin-top: 2rem; text-align: center;">
-            <a href="/" class="btn">
-                <i class="fas fa-redo"></i> 再次檢測
-            </a>
+        <!-- BOTTOM: Metrics List (Vertical Stack) -->
+        <div class="metrics-bottom">
+            <h3
+                style="margin-left: 0.5rem; color: var(--text-secondary); font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">
+                生物力學指標 (Biomechanics)
+            </h3>
+
+            <!-- Metric 1 -->
+            <div class="metric-card-row"
+                style="border-left-color: {{ 'var(--accent-error)' if features.X1_MaxTrunkLean > 45 else 'var(--accent-success)' }};">
+                <div class="metric-icon"><i class="fas fa-ruler-vertical"></i></div>
+                <div class="metric-label">最大軀幹前傾</div>
+                <div class="metric-value">{{ "%.1f"|format(features.X1_MaxTrunkLean) }}°</div>
+            </div>
+
+            <!-- Metric 2 -->
+            <div class="metric-card-row"
+                style="border-left-color: {{ 'var(--accent-error)' if features.X3_MinHandKneeDist < 0.2 else 'var(--accent-success)' }};">
+                <div class="metric-icon"><i class="fas fa-arrows-alt-h"></i></div>
+                <div class="metric-label">手膝最小距離</div>
+                <div class="metric-value">{{ "%.2f"|format(features.X3_MinHandKneeDist) }}</div>
+            </div>
+
+            <!-- Metric 3 -->
+            <div class="metric-card-row" style="border-left-color: var(--accent-primary);">
+                <div class="metric-icon"><i class="fas fa-stopwatch"></i></div>
+                <div class="metric-label">動作總時長</div>
+                <div class="metric-value">{{ "%.2f"|format(features.X2_TotalDuration) }} s</div>
+            </div>
+
+            <!-- Metric 4 -->
+            <div class="metric-card-row" style="border-left-color: var(--accent-primary);">
+                <div class="metric-icon"><i class="fas fa-angle-right"></i></div>
+                <div class="metric-label">結束膝蓋角度</div>
+                <div class="metric-value">{{ "%.1f"|format(features.X4_EndKneeAngle) }}°</div>
+            </div>
+
         </div>
+
     </div>
+
 </div>
 {% endblock %}
