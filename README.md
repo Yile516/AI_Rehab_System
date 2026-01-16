@@ -77,5 +77,8 @@ git pull
     `git pull`
 
     <img width="1902" height="960" alt="image" src="https://github.com/user-attachments/assets/96657213-eb2c-4112-b4d5-ab8a671ed5c3" />
+
+    <img width="1900" height="959" alt="image" src="https://github.com/user-attachments/assets/c3bf6cb9-276b-48da-8110-4e6101eb4616" />
+
     
 
