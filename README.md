@@ -75,3 +75,7 @@ git pull
     3. `git push`
 *   **換電腦工作前**：
     `git pull`
+
+    <img width="1902" height="960" alt="image" src="https://github.com/user-attachments/assets/96657213-eb2c-4112-b4d5-ab8a671ed5c3" />
+    
+
