@@ -1,5 +1,5 @@
 # AI Rehab System (AI 復健系統)
-![System Demo](images/demo.gif)
+![System Demo](images/ezgif-22993d437e3e0107.gif)
 
 
 
