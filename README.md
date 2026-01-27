@@ -19,6 +19,15 @@
 
 ---
 
+## 📊 系統截圖 (Screenshots)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/96657213-eb2c-4112-b4d5-ab8a671ed5c3" width="30%" alt="Screen 2" />
+  <img src="https://github.com/user-attachments/assets/c3bf6cb9-276b-48da-8110-4e6101eb4616" width="30%" alt="Screen 3" />
+</p>
+
+---
+
 ## 🏗️ 系統架構 (System Architecture)
 
 ### 技術棧 (Technology Stack)
@@ -134,14 +143,6 @@ python app.py
 ```
 打開瀏覽器輸入 `http://127.0.0.1:5000` 即可開始使用。
 
----
-
-## 📊 系統截圖 (Screenshots)
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/96657213-eb2c-4112-b4d5-ab8a671ed5c3" width="30%" alt="Screen 2" />
-  <img src="https://github.com/user-attachments/assets/c3bf6cb9-276b-48da-8110-4e6101eb4616" width="30%" alt="Screen 3" />
-</p>
 
 ---
 
