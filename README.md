@@ -1,4 +1,6 @@
 # AI Rehab System (AI 復健系統)
+<img width="2752" height="1536" alt="image" src="https://github.com/user-attachments/assets/40579879-8c96-4e48-8e63-775de8b09563" />
+
 這是你的 AI 復健系統專案。以下說明如何在其他電腦上下載並執行這個程式。
 ## 1. 在新電腦上的準備工作
 在開始之前，請確保新電腦已經安裝：
