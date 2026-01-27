@@ -1,6 +1,7 @@
 # AI Rehab System (AI 復健系統)
 ![System Demo](assets/demo.gif)
-<img width="2752" height="1536" alt="image" src="https://github.com/user-attachments/assets/40579879-8c96-4e48-8e63-775de8b09563" />
+
+
 
 這是你的 AI 復健系統專案。以下說明如何在其他電腦上下載並執行這個程式。
 ## 1. 在新電腦上的準備工作
@@ -81,7 +82,7 @@ git pull
     3. `git push`
 *   **換電腦工作前**：
     `git pull`
-
+  <img width="2752" height="1536" alt="image" src="https://github.com/user-attachments/assets/40579879-8c96-4e48-8e63-775de8b09563" />
     <img width="1902" height="960" alt="image" src="https://github.com/user-attachments/assets/96657213-eb2c-4112-b4d5-ab8a671ed5c3" />
 
     <img width="1900" height="959" alt="image" src="https://github.com/user-attachments/assets/c3bf6cb9-276b-48da-8110-4e6101eb4616" />
