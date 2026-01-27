@@ -60,6 +60,24 @@ graph LR
 ```
 
 ---
+## 🔬 技術細節 (Technical Details)
+
+### MediaPipe Pose 關鍵點定義
+系統使用 MediaPipe 的 33 點模型，主要分析以下關鍵點：
+- **軀幹**：肩膀 (11, 12) → 髖部 (23, 24)
+- **下肢**：髖部 → 膝蓋 (25, 26) → 腳踝 (27, 28)
+- **上肢**：手腕 (15, 16) 用於偵測代償動作
+
+### 特徵工程原理
+| 特徵 | 計算方法 | 臨床意義 |
+|:---|:---|:---|
+| 軀幹前傾角 | `arctan(Δy / Δx)` | 核心肌力指標 |
+| 動作時長 | 從坐到站的總幀數 | 肌力衰弱篩檢 |
+| 手膝距離 | `√((x₁-x₂)² + (y₁-y₂)²)` | 代償動作偵測 |
+| 膝關節角 | 三點向量夾角 | 動作完成度 |
+
+---
+
 
 ### 核心功能模組 (Core Modules)
 
@@ -161,41 +179,7 @@ python app.py
 
 ---
 
-### 🏗️ 工作流程視覺化 (Workflow)
 
-```mermaid
-graph TD
-    A[Start Working] --> B(git pull)
-    B --> C{Coding & Testing}
-    C --> D[git add .]
-    D --> E[git commit -m 'update']
-    E --> F[git push]
-    F --> G((GitHub Success))
-
-    style G fill:#f9f,stroke:#333,stroke-width:4px
-    style A fill:#bbf,stroke:#333,stroke-width:2px
-```
-
----
-
-## 🔬 技術細節 (Technical Details)
-
-### MediaPipe Pose 關鍵點定義
-系統使用 MediaPipe 的 33 點模型，主要分析以下關鍵點：
-- **軀幹**：肩膀 (11, 12) → 髖部 (23, 24)
-- **下肢**：髖部 → 膝蓋 (25, 26) → 腳踝 (27, 28)
-- **上肢**：手腕 (15, 16) 用於偵測代償動作
-
-### 特徵工程原理
-| 特徵 | 計算方法 | 臨床意義 |
-|:---|:---|:---|
-| 軀幹前傾角 | `arctan(Δy / Δx)` | 核心肌力指標 |
-| 動作時長 | 從坐到站的總幀數 | 肌力衰弱篩檢 |
-| 手膝距離 | `√((x₁-x₂)² + (y₁-y₂)²)` | 代償動作偵測 |
-| 膝關節角 | 三點向量夾角 | 動作完成度 |
-
----
-
-## 📜 License
+## License
 
 © 2026 Yile516 - AI Rehab System Project
