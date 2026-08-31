@@ -82,7 +82,7 @@ def train_from_videos():
     train_df = pd.DataFrame(all_data)
     
     # 準備訓練特徵 (必須與 app.py 預測時的輸入一致)
-    feature_cols = ['X1_MaxTrunkLean', 'X2_TotalDuration', 'X3_MinHandKneeDist', 'X4_EndKneeAngle']
+    feature_cols = ['X1_MaxTrunkLean', 'X2_TotalDuration', 'X3_AttHandKneeDist', 'X4_EndKneeAngle']
     X = train_df[feature_cols]
     y = train_df['Label']
     

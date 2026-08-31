@@ -53,10 +53,10 @@
 
             <!-- Metric 2 -->
             <div class="metric-card-row"
-                style="border-left-color: {{ 'var(--accent-error)' if features.X3_MinHandKneeDist < 0.2 else 'var(--accent-success)' }};">
+                style="border-left-color: {{ 'var(--accent-error)' if features.X3_AttHandKneeDist < 0.2 else 'var(--accent-success)' }};">
                 <div class="metric-icon"><i class="fas fa-arrows-alt-h"></i></div>
-                <div class="metric-label">手膝最小距離</div>
-                <div class="metric-value">{{ "%.2f"|format(features.X3_MinHandKneeDist) }}</div>
+                <div class="metric-label">手膝加權距離</div>
+                <div class="metric-value">{{ "%.2f"|format(features.X3_AttHandKneeDist) }}</div>
             </div>
 
             <!-- Metric 3 -->

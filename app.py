@@ -6,6 +6,7 @@ Created on Thu Dec 11 15:25:08 2025
 """
 
 import os
+import logging
 import joblib
 import pandas as pd
 from flask import Flask, render_template, request, send_from_directory
@@ -14,15 +15,22 @@ from config import Config
 from utils.processor import process_video
 from utils.visualizer import create_rehab_video
 
+# 設定 logging，訊息輸出至 stderr（Flask 標準做法，不受 WSGI stdout 影響）
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
 # 載入模型
 try:
     model = joblib.load(Config.MODEL_PATH)
-    print("AI 模型載入成功")
-except:
-    print("模型未找到，請先執行 model/train_model.py")
+    logger.info("AI 模型載入成功")
+except Exception as e:
+    logger.warning(f"模型未找到，請先執行 model/train_model.py: {e}")
     model = None
 
 RESULT_MAP = {
@@ -52,9 +60,18 @@ def analyze_blob():
     return "No video uploaded", 400
 
 def process_and_analyze(file):
-    # 1. 儲存影片
-    filename = secure_filename(file.filename)
-    if not filename: filename = "upload_video.mp4"
+    import time
+    # 1. 儲存影片，保留安全檔名與副檔名
+    orig_name, ext = os.path.splitext(file.filename)
+    ext = ext.lower()
+    if ext not in ['.mp4', '.mov', '.avi', '.webm']:
+        ext = '.mp4'
+        
+    sec_name = secure_filename(orig_name)
+    if not sec_name:
+        sec_name = f"upload_{int(time.time())}"
+        
+    filename = sec_name + ext
     vid_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(vid_path)
     
@@ -65,10 +82,10 @@ def process_and_analyze(file):
     if features:
         # 3. AI 預測
         # 轉換成 DataFrame 輸入模型 (注意順序要跟訓練時一樣)
-        X_input = pd.DataFrame([features])[['X1_MaxTrunkLean', 'X2_TotalDuration', 'X3_MinHandKneeDist', 'X4_EndKneeAngle']]
+        X_input = pd.DataFrame([features])[['X1_MaxTrunkLean', 'X2_TotalDuration', 'X3_AttHandKneeDist', 'X4_EndKneeAngle']]
         pred = model.predict(X_input)[0]
         res_info = RESULT_MAP[pred]
-        
+     
         # 4. 生成結果影片
         out_vid_name = 'result_' + filename
         out_vid_path = os.path.join(app.config['RESULTS_FOLDER'], out_vid_name)
@@ -83,4 +100,4 @@ def get_result_video(filename):
     return send_from_directory(app.config['RESULTS_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)

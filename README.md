@@ -38,7 +38,7 @@
 | **後端框架** | Flask (Python 3.9+) | Web 伺服器與 RESTful API |
 | **電腦視覺** | MediaPipe Pose | 33 點人體骨架即時偵測 |
 | **影像處理** | OpenCV (cv2) | 影片讀取、畫面處理與視覺化疊加 |
-| **機器學習** | Scikit-learn (Random Forest) | 動作分類模型 (健康/衰弱/代償) |
+| **機器學習** | Scikit-learn (Decision Tree) | 動作分類模型 (健康/衰弱/代償) |
 | **資料處理** | Pandas + NumPy | 特徵工程與資料分析 |
 
 ---
@@ -50,7 +50,7 @@ graph LR
     A[📹 影片上傳] --> B[MediaPipe 骨架偵測]
     B --> C[關節角度計算]
     C --> D[特徵萃取]
-    D --> E[Random Forest 分類]
+    D[特徵萃取] --> E[Decision Tree 分類]
     E --> F[風險評估結果]
     F --> G[視覺化報告影片]
     
@@ -72,7 +72,7 @@ graph LR
   - 計算軀幹前傾角度、膝關節角度、手膝距離
 
 #### 2. **AI 診斷模型** (`model/train_model.py`)
-- **演算法**：Random Forest Classifier
+- **演算法**：Decision Tree Classifier
 - **輸入特徵** (4 項生物力學指標)：
   - `X1_MaxTrunkLean`：最大軀幹前傾角度 (°)
   - `X2_TotalDuration`：動作總時長 (秒)

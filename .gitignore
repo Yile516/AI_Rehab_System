@@ -14,3 +14,15 @@ results/
 
 # Large media files (often better to exclude test videos)
 *.mp4
+
+# Paper & Presentations
+*.docx
+*.pptx
+paper_figures/
+generate_paper_docx.py
+generate_paper_figures.py
+generate_presentation.py
+generate_table_image.py
+Integrating Temporal Attention*.txt
+
+
